@@ -25,13 +25,15 @@ function renderRing(score, size) {
 
 /* ── Radar Chart ── */
 function renderRadar(kpis, size) {
-  size = size || 240;
-  var cx = size/2, cy = size/2, maxR = size/2 - 30;
+  size = size || 280;
+  var pad = 50;
+  var vw = size + pad*2;
+  var cx = vw/2, cy = vw/2, maxR = size/2 - 20;
   var keys = Object.keys(KPI);
   var n = keys.length;
   var angleStep = (2 * Math.PI) / n;
 
-  var svg = '<svg viewBox="0 0 '+size+' '+size+'" width="'+size+'" height="'+size+'">';
+  var svg = '<svg viewBox="0 0 '+vw+' '+vw+'" width="'+vw+'" height="'+vw+'" style="max-width:100%">';
 
   // Grid rings
   for (var ring = 1; ring <= 4; ring++) {
@@ -61,14 +63,17 @@ function renderRadar(kpis, size) {
   }
   svg += '<polygon points="'+dataPts.join(" ")+'" fill="rgba(0,68,129,0.1)" stroke="#004481" stroke-width="2"/>';
 
-  // Labels
+  // Labels with value
   for (var i = 0; i < n; i++) {
     var a = -Math.PI/2 + i * angleStep;
-    var lx = cx + (maxR + 18) * Math.cos(a);
-    var ly = cy + (maxR + 18) * Math.sin(a);
-    var label = KPI[keys[i]].label.split(" ")[0];
+    var lx = cx + (maxR + 24) * Math.cos(a);
+    var ly = cy + (maxR + 24) * Math.sin(a);
+    var radarLabels = {rotation:"Rotación",deforestation:"Deforest.",carbon:"Carbono",drought:"Sequía",coverCrop:"Cobertura",flood:"Inundación"};
+    var label = radarLabels[keys[i]] || keys[i];
+    var pct = Math.round(normalize(keys[i], kpis[keys[i]]));
     var anchor = Math.abs(Math.cos(a)) < 0.1 ? "middle" : Math.cos(a) > 0 ? "start" : "end";
-    svg += '<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" text-anchor="'+anchor+'" dominant-baseline="central" fill="#6B7280" font-size="10">'+label+'</text>';
+    svg += '<text x="'+lx.toFixed(1)+'" y="'+(ly-7).toFixed(1)+'" text-anchor="'+anchor+'" dominant-baseline="central" fill="#374151" font-size="11" font-weight="600">'+label+'</text>';
+    svg += '<text x="'+lx.toFixed(1)+'" y="'+(ly+7).toFixed(1)+'" text-anchor="'+anchor+'" dominant-baseline="central" fill="'+scoreColor(pct)+'" font-size="10" font-weight="700">'+pct+'%</text>';
   }
 
   svg += '</svg>';
