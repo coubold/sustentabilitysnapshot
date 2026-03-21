@@ -256,8 +256,11 @@ function showNewModal() {
       runProcessing(modal, steps, function() {
         // Generate result
         var rot=Math.floor(Math.random()*4)+1, def=Math.random()>0.1?100:Math.floor(Math.random()*10)+90;
-        var car=parseFloat((Math.random()*3+0.5).toFixed(1)), dr=Math.floor(Math.random()*60)+20;
-        var cc=Math.floor(Math.random()*50)+10, fl=Math.floor(Math.random()*50)+20;
+        var ccBase = rot>=4?Math.floor(Math.random()*40)+50 : rot>=2?Math.floor(Math.random()*35)+15 : Math.floor(Math.random()*15);
+        var cc=ccBase, rotF=rot/5, ccF=cc/100;
+        var car=parseFloat(Math.min(4.5, Math.max(0.3, 0.3+rotF*2.5+ccF*1.5+(Math.random()-0.5)*0.3)).toFixed(1));
+        var dr=Math.min(95, Math.max(5, Math.round(ccF*50+rotF*20+10+(Math.random()-0.5)*15)));
+        var fl=Math.min(95, Math.max(10, Math.round(rotF*45+ccF*30+10+(Math.random()-0.5)*15)));
         var nR=(rot/5)*100, nC=(car/4.5)*100;
         var score=Math.round(nR*0.2+def*0.2+nC*0.15+dr*0.15+cc*0.15+fl*0.15);
         var phase=score>=85?5:score>=70?4:score>=50?3:score>=30?2:1;
@@ -341,14 +344,16 @@ function showReevalModal() {
   ];
 
   runProcessing(modal, steps, function() {
-    // Evolve KPIs
-    var rot = Math.min(5, prev.kpis.rotation + (Math.random()>0.5?1:0));
+    // Evolve KPIs — correlated improvements
+    var rotImproved = Math.random() > 0.5;
+    var rot = rotImproved ? Math.min(5, prev.kpis.rotation + 1) : prev.kpis.rotation;
     var def = prev.kpis.deforestation >= 100 ? 100 : Math.min(100, prev.kpis.deforestation + Math.floor(Math.random()*3));
-    var car = Math.min(4.5, parseFloat((prev.kpis.carbon + (Math.random()-0.25)*0.8).toFixed(1)));
-    var dr = Math.min(100, Math.round(prev.kpis.drought + (Math.random()-0.25)*15));
-    var cc = Math.min(100, Math.round(prev.kpis.coverCrop + (Math.random()-0.25)*18));
-    var fl = Math.min(100, Math.round(prev.kpis.flood + (Math.random()-0.25)*12));
-    car = Math.max(0.3, car); dr = Math.max(5, dr); cc = Math.max(2, cc); fl = Math.max(10, fl);
+    var ccDelta = rotImproved ? Math.floor(Math.random()*12)+8 : Math.floor(Math.random()*15)-3;
+    var cc = Math.max(0, Math.min(100, prev.kpis.coverCrop + ccDelta));
+    var newRotF = rot/5, newCcF = cc/100;
+    var car = parseFloat(Math.min(4.5, Math.max(0.3, 0.3+newRotF*2.5+newCcF*1.5+(Math.random()-0.5)*0.3)).toFixed(1));
+    var dr = Math.max(5, Math.min(100, Math.round(prev.kpis.drought + newCcF*10 + (Math.random()-0.5)*8)));
+    var fl = Math.max(10, Math.min(100, Math.round(prev.kpis.flood + newRotF*8 + (Math.random()-0.5)*8)));
     var nR=(rot/5)*100, nC=(car/4.5)*100;
     var score = Math.round(nR*0.2+def*0.2+nC*0.15+dr*0.15+cc*0.15+fl*0.15);
     var phase = score>=85?5:score>=70?4:score>=50?3:score>=30?2:1;

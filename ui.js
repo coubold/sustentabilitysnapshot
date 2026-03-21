@@ -25,16 +25,59 @@ function renderFooter() {
     '</div>';
 }
 
+/* ── KPI contextual descriptions ── */
+function kpiContext(k, v, kpis) {
+  var s = semaphore(k, v);
+  if (k === "rotation") {
+    if (v <= 1) return "Monocultivo detectado en la mayoría de los lotes. Sin diversificación se pierde hasta 32% del carbono microbiano del suelo (INTA/CONICET).";
+    if (v <= 2) return "Rotación limitada — predomina soja con maíz esporádico. Incorporar gramíneas invernales (trigo/cebada) mejoraría la estructura del suelo.";
+    if (v <= 3) return "Rotación moderada con inclusión parcial de gramíneas. La secuencia M-T/S muestra mejoras de +37% en calidad de suelo vs. monocultivo.";
+    if (v <= 4) return "Buena diversificación con gramíneas y leguminosas alternadas. Esquema cercano a la intensificación recomendada por INTA.";
+    return "Rotación completa con alta ocupación del suelo. Secuencia tipo T/S-CC/M que maximiza calidad de suelo, actividad microbiana e infiltración.";
+  }
+  if (k === "deforestation") {
+    if (v >= 100) return "Zona sin bosque nativo en riesgo — cumplimiento total contra línea base EUDR (31/12/2020). Apto para mercados europeos.";
+    if (v >= 90) return "Zona de frontera agropecuaria con alto cumplimiento. Se detectan áreas menores de cambio de uso de suelo a monitorear.";
+    return "Zona de frontera con expansión agropecuaria sobre áreas sensibles. Requiere verificación de imágenes de alta resolución contra línea base.";
+  }
+  if (k === "carbon") {
+    var rotV = kpis ? kpis.rotation : 0;
+    var ccV = kpis ? kpis.coverCrop : 0;
+    if (v >= 3) return "Secuestro alto, coherente con rotación de " + rotV + "/5 campañas y " + ccV + "% de cobertura invernal. Suelos pampeanos con este manejo acumulan 0.3-0.6 tn C/ha/año.";
+    if (v >= 1.5) return "Captura moderada. La inclusión de cultivos de servicio (vicia, centeno) y mayor rotación incrementaría biomasa microbiana y fijación de CO₂.";
+    return "Captura baja — asociada a baja rotación (" + rotV + "/5) y escasa cobertura invernal (" + ccV + "%). El monocultivo reduce significativamente el carbono orgánico del suelo.";
+  }
+  if (k === "drought") {
+    var ccV2 = kpis ? kpis.coverCrop : 0;
+    if (s === "green") return "Alta capacidad de respuesta hídrica. Cobertura invernal de " + ccV2 + "% mejora la retención de humedad y reduce evaporación del suelo.";
+    if (s === "orange") return "Capacidad moderada. Ampliar cultivos de cobertura mejoraría el balance hídrico — los CC captan agua y reducen pérdidas por evaporación.";
+    return "Vulnerabilidad alta ante estrés hídrico. Suelos con baja cobertura pierden humedad rápidamente. Priorizar CC y evaluar riego complementario.";
+  }
+  if (k === "coverCrop") {
+    if (v >= 50) return "Más de la mitad de los lotes protegidos en invierno. Los CC reducen 60% la densidad de malezas, fijan carbono y reciclan nitrógeno (INTA Cañada de Gómez).";
+    if (v >= 20) return "Cobertura parcial — quedan lotes expuestos a erosión invernal. Priorizar lotes con mayor pendiente o historial de pérdida de suelo.";
+    return "Cobertura mínima — la mayoría de los lotes quedan en barbecho limpio. Alto riesgo de erosión hídrica, pérdida de nutrientes y compactación.";
+  }
+  if (k === "flood") {
+    var rotV2 = kpis ? kpis.rotation : 0;
+    if (s === "green") return "Buena resiliencia ante anegamiento. La rotación con gramíneas (" + rotV2 + "/5) consume 19.5% más agua, reduciendo excedentes que elevan napas.";
+    if (s === "orange") return "Resiliencia moderada. Incorporar más gramíneas en rotación ayudaría a consumir excedentes hídricos. Evaluar sistematización de lotes bajos.";
+    return "Vulnerabilidad alta a inundación. Baja rotación con gramíneas genera excedentes hídricos. Las napas elevadas en pampa húmeda agravan el riesgo.";
+  }
+  return "";
+}
+
 /* ── KPI Card ── */
-function renderKpiCard(k, v) {
+function renderKpiCard(k, v, kpis) {
   var cfg = KPI[k];
   var s = semaphore(k, v);
   var disp = displayKpi(k, v);
+  var ctx = kpiContext(k, v, kpis);
   return '<div class="kpi-card '+s+'">' +
     '<div class="kpi-header"><span class="kpi-icon">'+cfg.icon+'</span><div class="kpi-dot '+s+'"></div></div>' +
     '<div class="kpi-label">'+cfg.label+'</div>' +
     '<div class="kpi-value '+s+'">'+disp+'</div>' +
-    '<div class="kpi-desc">'+cfg.desc+'</div>' +
+    '<div class="kpi-desc">'+ctx+'</div>' +
     '</div>';
 }
 
@@ -203,7 +246,7 @@ function renderDetailView(client, selAid, tab) {
 
   if (tab === "overview") {
     html += '<div class="kpi-grid">';
-    Object.keys(KPI).forEach(function(k) { html += renderKpiCard(k, ca.kpis[k]); });
+    Object.keys(KPI).forEach(function(k) { html += renderKpiCard(k, ca.kpis[k], ca.kpis); });
     html += '</div>';
     html += '<div class="panel"><div class="panel-title">Perfil Radar</div>' +
       '<div class="chart-container">' + renderRadar(ca.kpis) + '</div></div>';
