@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════
-   AgroSnapshot Sostenibilidad
+   AgroSnapshot Sustentabilidad
    BBVA × BoldOS — Styles
    ═══════════════════════════════════════ */
 
@@ -45,6 +45,7 @@ body { font-family:system-ui,-apple-system,sans-serif; color:var(--gray-900); ba
 /* Header */
 .header { background:#fff; padding:0 28px; height:56px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--gray-200); position:sticky; top:0; z-index:100; box-shadow:var(--shadow); }
 .header-left { display:flex; align-items:center; gap:16px; }
+.header-right { display:flex; align-items:center; }
 .header-sep { width:1px; height:24px; background:var(--gray-200); }
 .header-badge { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:1.5px; color:var(--bbva); background:var(--bbva-light); padding:4px 12px; border-radius:20px; border:1px solid var(--bbva-border); }
 

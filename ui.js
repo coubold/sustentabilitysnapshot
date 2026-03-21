@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════
-   AgroSnapshot Sostenibilidad
+   AgroSnapshot Sustentabilidad
    ui.js — DOM Rendering
    ═══════════════════════════════════════ */
 
@@ -12,8 +12,8 @@ function boldLogo(h, c) { return BOLD_LOGO.replace(/##H##/g, h||12).replace(/##C
 /* ── Header ── */
 function renderHeader() {
   return '<div class="header">' +
-    '<div class="header-left">' + bbvaLogo(20) + '<div class="header-sep"></div>' + boldLogo(12) + '</div>' +
-    '<span class="header-badge">AgroSnapshot Sostenibilidad</span>' +
+    '<div class="header-left">' + bbvaLogo(20) + '<div class="header-sep"></div><span class="header-badge">AgroSnapshot Sustentabilidad</span></div>' +
+    '<div class="header-right">' + boldLogo(18) + '</div>' +
     '</div>';
 }
 
@@ -183,7 +183,7 @@ function renderDetailView(client, selAid, tab) {
   // Score + Phase
   html += '<div class="score-phase-grid">';
   html += '<div class="score-box">' + renderRing(ca.score, 120) +
-    '<div class="score-label">Índice de Sostenibilidad</div>' +
+    '<div class="score-label">Índice de Sustentabilidad</div>' +
     '<div class="score-sublabel"><span style="color:'+scoreColor(ca.score)+';font-weight:700">'+statusLabel(ca.score)+'</span> · Fase '+ca.phase+'</div>';
   if (ca.kpis.deforestation >= 90) html += '<div class="eudr-badge"><div class="eudr-dot"></div> EUDR Compliant</div>';
   html += '<div class="score-date">'+formatDate(ca.date)+'</div></div>';
@@ -252,7 +252,7 @@ function exportReport(cl, a) {
     pRows += '<tr><td style="padding:8px 14px;border-bottom:1px solid #E5E7EB">Fase '+p.n+': '+p.name+'</td><td style="padding:8px 14px;border-bottom:1px solid #E5E7EB">'+st+'</td><td style="padding:8px 14px;border-bottom:1px solid #E5E7EB">'+p.benefit+'</td></tr>';
   });
 
-  var html = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Informe Sostenibilidad — '+cl.name+'</title>' +
+  var html = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Informe Sustentabilidad — '+cl.name+'</title>' +
     '<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:system-ui,sans-serif;color:#1F2937;padding:40px;max-width:800px;margin:0 auto}' +
     'h1{font-size:22px;color:#004481;margin-bottom:4px}h2{font-size:16px;color:#004481;margin:28px 0 12px;padding-bottom:8px;border-bottom:2px solid #004481}' +
     '.meta{color:#6B7280;font-size:13px;margin-bottom:24px}.sb{text-align:center;padding:24px;background:#F0F7FF;border-radius:12px;margin:20px 0}' +
@@ -261,17 +261,17 @@ function exportReport(cl, a) {
     '.ft{margin-top:40px;padding-top:16px;border-top:1px solid #E5E7EB;text-align:center;color:#9CA3AF;font-size:11px}' +
     '.eu{display:inline-block;padding:6px 16px;border-radius:20px;background:#F0FDF4;color:#16A34A;font-weight:600;font-size:13px;border:1px solid #BBF7D0;margin-top:12px}' +
     '@media print{body{padding:20px}}</style></head><body>' +
-    '<h1>Informe de Sostenibilidad Agro</h1><div class="meta">'+cl.name+' · CUIT '+cl.cuit+'<br>'+cl.loc+' · '+cl.ha.toLocaleString()+' ha · '+cl.lots+' lotes</div>' +
+    '<h1>Informe de Sustentabilidad Agro</h1><div class="meta">'+cl.name+' · CUIT '+cl.cuit+'<br>'+cl.loc+' · '+cl.ha.toLocaleString()+' ha · '+cl.lots+' lotes</div>' +
     '<div class="sb"><div class="sn" style="color:'+scoreColor(a.score)+'">'+a.score+'/100</div><div class="sl">Estadio: '+statusLabel(a.score)+' · Fase '+a.phase+' de 5</div>' +
     (a.kpis.deforestation>=90?'<div class="eu">✓ EUDR Compliant — Deforestación Cero</div>':'')+'</div>' +
-    '<h2>Indicadores de Sostenibilidad</h2><table><thead><tr><th>Indicador</th><th>Valor</th><th>Estado</th></tr></thead><tbody>'+rows+'</tbody></table>' +
+    '<h2>Indicadores de Sustentabilidad</h2><table><thead><tr><th>Indicador</th><th>Valor</th><th>Estado</th></tr></thead><tbody>'+rows+'</tbody></table>' +
     '<h2>Fases Snapshot Sustainability</h2><table><thead><tr><th>Fase</th><th>Estado</th><th>Beneficio</th></tr></thead><tbody>'+pRows+'</tbody></table>' +
     '<div class="ft">Powered by BoldOS · Sensorización multitemporal + IA agronómica<br>'+new Date().toLocaleDateString("es-AR")+'</div></body></html>';
 
   var blob = new Blob([html], {type:"text/html"});
   var url = URL.createObjectURL(blob);
   var el = document.createElement("a");
-  el.href = url; el.download = "informe-sostenibilidad-"+cl.cuit+".html";
+  el.href = url; el.download = "informe-sustentabilidad-"+cl.cuit+".html";
   document.body.appendChild(el); el.click(); document.body.removeChild(el);
   URL.revokeObjectURL(url);
 }

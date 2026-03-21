@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════
-   AgroSnapshot Sostenibilidad
+   AgroSnapshot Sustentabilidad
    data.js — Constants, Config & Mock Data
    ═══════════════════════════════════════ */
 

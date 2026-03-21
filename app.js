@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════
-   AgroSnapshot Sostenibilidad
+   AgroSnapshot Sustentabilidad
    app.js — State, Routing & Events
    ═══════════════════════════════════════ */
 
@@ -161,7 +161,7 @@ function showNewModal() {
 
   function renderStep() {
     var html = '<div class="modal-head"><div>' +
-      '<div class="modal-title">Nueva Evaluación de Sostenibilidad</div>' +
+      '<div class="modal-title">Nueva Evaluación de Sustentabilidad</div>' +
       '<div class="modal-subtitle">'+(step===1?"Datos del establecimiento":step===2?"Carga de polígonos":step===3?"Procesando con BoldOS":"Evaluación completa")+'</div>' +
       '</div><div class="modal-steps">';
     for (var s=1;s<=4;s++) html += '<div class="modal-step" style="width:'+(s===step?'24':'8')+'px;background:'+(s<=step?'#004481':'#E5E7EB')+'"></div>';
@@ -250,7 +250,7 @@ function showNewModal() {
         "Estimando captura de carbono por biomasa...",
         "Evaluando estrés hídrico y cobertura invernal...",
         "Procesando riesgo de inundación...",
-        "BoldOS Thot — generando score de sostenibilidad...",
+        "BoldOS Thot — generando score de sustentabilidad...",
         "Compilando informe y recomendaciones...",
       ];
       runProcessing(modal, steps, function() {
@@ -277,7 +277,7 @@ function showNewModal() {
           '<div style="font-size:12px;color:#6B7280">'+form.name+' · CUIT '+form.cuit+'</div></div>' +
           '<div style="background:#F9FAFB;border-radius:12px;padding:20px;border:1px solid #E5E7EB;margin-bottom:20px;text-align:center">' +
           renderRing(score, 80) +
-          '<div style="font-size:13px;font-weight:700;color:#004481;margin-top:8px">Score de Sostenibilidad</div>' +
+          '<div style="font-size:13px;font-weight:700;color:#004481;margin-top:8px">Score de Sustentabilidad</div>' +
           '<div style="font-size:12px;color:#6B7280">Estadio: <span style="font-weight:700;color:'+scoreColor(score)+'">'+statusLabel(score)+'</span> · Fase '+phase+'</div></div>' +
           '<button class="btn btn-primary btn-full" id="m-save-new">Ver Informe Completo →</button>';
 
@@ -312,7 +312,7 @@ function showReevalModal() {
   document.body.appendChild(overlay);
 
   modal.innerHTML = '<div class="modal-head"><div>' +
-    '<div class="modal-title">Reevaluación de Sostenibilidad</div>' +
+    '<div class="modal-title">Reevaluación de Sustentabilidad</div>' +
     '<div class="modal-subtitle">'+cl.name+' · '+cl.cuit+'</div></div></div>' +
     '<div class="modal-body">' +
     '<div style="background:#F9FAFB;border-radius:10px;padding:12px 16px;border:1px solid #E5E7EB;margin-bottom:20px;display:flex;align-items:center;gap:12px">' +
@@ -335,7 +335,7 @@ function showReevalModal() {
     "Detectando cultivo de cobertura invernal...",
     "Evaluando estrés hídrico y reserva de agua en suelo...",
     "Analizando riesgo de inundación — recurrencia histórica...",
-    "BoldOS Thot — recalculando score de sostenibilidad...",
+    "BoldOS Thot — recalculando score de sustentabilidad...",
     "Comparando con evaluación anterior...",
     "Generando informe actualizado y recomendaciones...",
   ];

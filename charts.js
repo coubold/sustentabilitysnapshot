@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════
-   AgroSnapshot Sostenibilidad
+   AgroSnapshot Sustentabilidad
    charts.js — SVG Charts (no dependencies)
    ═══════════════════════════════════════ */
 
