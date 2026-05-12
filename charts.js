@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════
-   AgroSnapshot Sustentabilidad
+   AgroSnapshot Sostenibilidad
    charts.js — SVG Charts (no dependencies)
    ═══════════════════════════════════════ */
 
@@ -12,7 +12,7 @@ function renderRing(score, size) {
   var c = scoreColor(score);
   return '<div style="position:relative;width:'+size+'px;height:'+size+'px">' +
     '<svg viewBox="0 0 '+size+' '+size+'" width="'+size+'" height="'+size+'">' +
-    '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="#F3F4F6" stroke-width="7"/>' +
+    '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="#1f2937" stroke-width="7"/>' +
     '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="'+c+'" stroke-width="7" stroke-linecap="round" ' +
     'stroke-dasharray="'+circ+'" stroke-dashoffset="'+off+'" ' +
     'style="transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset .8s ease"/>' +
@@ -25,15 +25,13 @@ function renderRing(score, size) {
 
 /* ── Radar Chart ── */
 function renderRadar(kpis, size) {
-  size = size || 280;
-  var pad = 50;
-  var vw = size + pad*2;
-  var cx = vw/2, cy = vw/2, maxR = size/2 - 20;
+  size = size || 240;
+  var cx = size/2, cy = size/2, maxR = size/2 - 30;
   var keys = Object.keys(KPI);
   var n = keys.length;
   var angleStep = (2 * Math.PI) / n;
 
-  var svg = '<svg viewBox="0 0 '+vw+' '+vw+'" width="'+vw+'" height="'+vw+'" style="max-width:100%">';
+  var svg = '<svg viewBox="0 0 '+size+' '+size+'" width="'+size+'" height="'+size+'">';
 
   // Grid rings
   for (var ring = 1; ring <= 4; ring++) {
@@ -43,13 +41,13 @@ function renderRadar(kpis, size) {
       var a = -Math.PI/2 + i * angleStep;
       pts.push((cx + rr * Math.cos(a)).toFixed(1) + "," + (cy + rr * Math.sin(a)).toFixed(1));
     }
-    svg += '<polygon points="'+pts.join(" ")+'" fill="none" stroke="#E5E7EB" stroke-width="1"/>';
+    svg += '<polygon points="'+pts.join(" ")+'" fill="none" stroke="#1f2937" stroke-width="1"/>';
   }
 
   // Axis lines
   for (var i = 0; i < n; i++) {
     var a = -Math.PI/2 + i * angleStep;
-    svg += '<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+maxR*Math.cos(a)).toFixed(1)+'" y2="'+(cy+maxR*Math.sin(a)).toFixed(1)+'" stroke="#E5E7EB" stroke-width="1"/>';
+    svg += '<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+maxR*Math.cos(a)).toFixed(1)+'" y2="'+(cy+maxR*Math.sin(a)).toFixed(1)+'" stroke="#1f2937" stroke-width="1"/>';
   }
 
   // Data polygon
@@ -61,19 +59,16 @@ function renderRadar(kpis, size) {
     var dr = maxR * val;
     dataPts.push((cx + dr * Math.cos(a)).toFixed(1) + "," + (cy + dr * Math.sin(a)).toFixed(1));
   }
-  svg += '<polygon points="'+dataPts.join(" ")+'" fill="rgba(0,68,129,0.1)" stroke="#004481" stroke-width="2"/>';
+  svg += '<polygon points="'+dataPts.join(" ")+'" fill="rgba(6,255,225,0.12)" stroke="#06ffe1" stroke-width="2"/>';
 
-  // Labels with value
+  // Labels
   for (var i = 0; i < n; i++) {
     var a = -Math.PI/2 + i * angleStep;
-    var lx = cx + (maxR + 24) * Math.cos(a);
-    var ly = cy + (maxR + 24) * Math.sin(a);
-    var radarLabels = {rotation:"Rotación",deforestation:"Deforest.",carbon:"Carbono",drought:"Sequía",coverCrop:"Cobertura",flood:"Inundación"};
-    var label = radarLabels[keys[i]] || keys[i];
-    var pct = Math.round(normalize(keys[i], kpis[keys[i]]));
+    var lx = cx + (maxR + 18) * Math.cos(a);
+    var ly = cy + (maxR + 18) * Math.sin(a);
+    var label = KPI[keys[i]].label.split(" ")[0];
     var anchor = Math.abs(Math.cos(a)) < 0.1 ? "middle" : Math.cos(a) > 0 ? "start" : "end";
-    svg += '<text x="'+lx.toFixed(1)+'" y="'+(ly-7).toFixed(1)+'" text-anchor="'+anchor+'" dominant-baseline="central" fill="#374151" font-size="11" font-weight="600">'+label+'</text>';
-    svg += '<text x="'+lx.toFixed(1)+'" y="'+(ly+7).toFixed(1)+'" text-anchor="'+anchor+'" dominant-baseline="central" fill="'+scoreColor(pct)+'" font-size="10" font-weight="700">'+pct+'%</text>';
+    svg += '<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" text-anchor="'+anchor+'" dominant-baseline="central" fill="#8a96a8" font-size="10">'+label+'</text>';
   }
 
   svg += '</svg>';
@@ -94,14 +89,14 @@ function renderLineChart(assessments, width, height) {
   // Grid
   for (var g = 0; g <= 4; g++) {
     var yy = pad.t + h - (g/4)*h;
-    svg += '<line x1="'+pad.l+'" y1="'+yy.toFixed(1)+'" x2="'+(pad.l+w)+'" y2="'+yy.toFixed(1)+'" stroke="#F3F4F6" stroke-width="1"/>';
-    svg += '<text x="'+(pad.l-5)+'" y="'+yy.toFixed(1)+'" text-anchor="end" dominant-baseline="central" fill="#9CA3AF" font-size="9">'+(g*25)+'</text>';
+    svg += '<line x1="'+pad.l+'" y1="'+yy.toFixed(1)+'" x2="'+(pad.l+w)+'" y2="'+yy.toFixed(1)+'" stroke="#1f2937" stroke-width="1"/>';
+    svg += '<text x="'+(pad.l-5)+'" y="'+yy.toFixed(1)+'" text-anchor="end" dominant-baseline="central" fill="#5a6678" font-size="9">'+(g*25)+'</text>';
   }
 
   // X labels
   for (var i = 0; i < assessments.length; i++) {
     var x = pad.l + (i / (assessments.length - 1)) * w;
-    svg += '<text x="'+x.toFixed(1)+'" y="'+(height-5)+'" text-anchor="middle" fill="#9CA3AF" font-size="9">'+formatDate(assessments[i].date).split(" ").slice(0,2).join(" ")+'</text>';
+    svg += '<text x="'+x.toFixed(1)+'" y="'+(height-5)+'" text-anchor="middle" fill="#5a6678" font-size="9">'+formatDate(assessments[i].date).split(" ").slice(0,2).join(" ")+'</text>';
   }
 
   // Score line
@@ -111,12 +106,12 @@ function renderLineChart(assessments, width, height) {
     var y = pad.t + h - (assessments[i].score / 100) * h;
     scorePts.push(x.toFixed(1)+","+y.toFixed(1));
   }
-  svg += '<polyline points="'+scorePts.join(" ")+'" fill="none" stroke="#004481" stroke-width="2.5"/>';
+  svg += '<polyline points="'+scorePts.join(" ")+'" fill="none" stroke="#06ffe1" stroke-width="2.5"/>';
   // Dots
   for (var i = 0; i < assessments.length; i++) {
     var x = pad.l + (i / (assessments.length - 1)) * w;
     var y = pad.t + h - (assessments[i].score / 100) * h;
-    svg += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="4" fill="#004481" stroke="#fff" stroke-width="2"/>';
+    svg += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="4" fill="#06ffe1" stroke="#121821" stroke-width="2"/>';
   }
 
   // Carbon line (secondary, normalized 0-100)
@@ -127,7 +122,7 @@ function renderLineChart(assessments, width, height) {
     var y = pad.t + h - (val / 100) * h;
     carbPts.push(x.toFixed(1)+","+y.toFixed(1));
   }
-  svg += '<polyline points="'+carbPts.join(" ")+'" fill="none" stroke="#D97706" stroke-width="1.5" stroke-dasharray="4 4"/>';
+  svg += '<polyline points="'+carbPts.join(" ")+'" fill="none" stroke="#ffb547" stroke-width="1.5" stroke-dasharray="4 4"/>';
 
   svg += '</svg>';
   return svg;
@@ -148,8 +143,8 @@ function renderBarChart(assessments, width, height) {
   // Grid
   for (var g = 0; g <= 4; g++) {
     var yy = pad.t + h - (g/4)*h;
-    svg += '<line x1="'+pad.l+'" y1="'+yy.toFixed(1)+'" x2="'+(pad.l+w)+'" y2="'+yy.toFixed(1)+'" stroke="#F3F4F6" stroke-width="1"/>';
-    svg += '<text x="'+(pad.l-5)+'" y="'+yy.toFixed(1)+'" text-anchor="end" dominant-baseline="central" fill="#9CA3AF" font-size="9">'+(g*25)+'</text>';
+    svg += '<line x1="'+pad.l+'" y1="'+yy.toFixed(1)+'" x2="'+(pad.l+w)+'" y2="'+yy.toFixed(1)+'" stroke="#1f2937" stroke-width="1"/>';
+    svg += '<text x="'+(pad.l-5)+'" y="'+yy.toFixed(1)+'" text-anchor="end" dominant-baseline="central" fill="#5a6678" font-size="9">'+(g*25)+'</text>';
   }
 
   for (var i = 0; i < n; i++) {
@@ -159,7 +154,7 @@ function renderBarChart(assessments, width, height) {
     var y = pad.t + h - barH;
     var c = scoreColor(a.score);
     svg += '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+barH.toFixed(1)+'" rx="4" fill="'+c+'"/>';
-    svg += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(height-5)+'" text-anchor="middle" fill="#9CA3AF" font-size="9">'+formatDate(a.date).split(" ").slice(0,2).join(" ")+'</text>';
+    svg += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(height-5)+'" text-anchor="middle" fill="#5a6678" font-size="9">'+formatDate(a.date).split(" ").slice(0,2).join(" ")+'</text>';
   }
 
   svg += '</svg>';

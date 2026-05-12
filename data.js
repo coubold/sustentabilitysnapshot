@@ -1,13 +1,6 @@
 /* ═══════════════════════════════════════
-   AgroSnapshot Sustentabilidad
+   AgroSnapshot Sostenibilidad
    data.js — Constants, Config & Mock Data
-   ═══════════════════════════════════════
-   Datos mock con correlaciones agronómicas reales:
-   - Rotación alta → mayor carbono orgánico (+37% SQI, INTA/CONICET 2024)
-   - Cobertura invernal → más captura de carbono y retención hídrica
-   - Gramíneas en rotación → +19.5% consumo de agua → menor riesgo inundación (INTA MJ)
-   - Carbono en Pampa húmeda: 0.3-0.6 tn/ha/año con buenas prácticas
-   - Deforestación: riesgo real solo en frontera agropecuaria (Chaco, norte SF/CBA)
    ═══════════════════════════════════════ */
 
 var KPI = {
@@ -24,21 +17,21 @@ var PHASES = [
   { n:2, name:"Rotación Verificada",    benefit:"Bonif. 0.50% tasa" },
   { n:3, name:"Cobertura + Carbono",    benefit:"Bonif. 0.75% tasa" },
   { n:4, name:"Gestión Hídrica",        benefit:"Línea verde preferencial" },
-  { n:5, name:"Certificación Integral", benefit:"Acceso Bono Verde BBVA" },
+  { n:5, name:"Certificación Integral", benefit:"Acceso a línea de financiamiento sostenible" },
 ];
 
 var RECOS = {
   rotation:[
-    {t:"Incorporar gramínea en rotación",d:"Alternar soja con maíz o sorgo para mejorar estructura del suelo. Estudios INTA muestran +37% en calidad de suelo con rotación T/S-CC/M.",i:"+8 pts"},
-    {t:"Eliminar monocultivo",d:"Lotes con 3+ campañas del mismo cultivo requieren diversificación. Monocultivo reduce 32% el carbono microbiano.",i:"+5 pts"}
+    {t:"Incorporar gramínea en rotación",d:"Alternar soja con maíz o sorgo para mejorar estructura del suelo.",i:"+8 pts"},
+    {t:"Eliminar monocultivo",d:"Lotes con 3+ campañas del mismo cultivo requieren diversificación.",i:"+5 pts"}
   ],
   carbon:[
-    {t:"Siembra directa continua",d:"Mantener rastrojo y minimizar laboreo para acumular materia orgánica. En Pampa húmeda, potencial de 0.3-0.6 tn C/ha/año.",i:"+6 pts"},
-    {t:"Cultivos de servicio",d:"Vicia, centeno o avena para fijar carbono y nitrógeno atmosférico. Incrementan biomasa microbiana y secuestro de CO₂.",i:"+10 pts"}
+    {t:"Siembra directa continua",d:"Mantener rastrojo y minimizar laboreo para acumular materia orgánica.",i:"+6 pts"},
+    {t:"Cultivos de servicio",d:"Vicia, centeno o avena para fijar carbono y nitrógeno atmosférico.",i:"+10 pts"}
   ],
-  coverCrop:[{t:"Ampliar cobertura invernal a 50%+ lotes",d:"Priorizar lotes expuestos a erosión hídrica. CC reducen 60% densidad de malezas y mejoran balance hídrico.",i:"+12 pts"}],
-  drought:[{t:"Estudio de factibilidad de riego",d:"Pivot central o goteo en lotes con estrés hídrico recurrente. Complementar con CC que mejoran retención de humedad.",i:"+7 pts"}],
-  flood:[{t:"Incorporar gramíneas en rotación",d:"Gramíneas consumen 19.5% más agua, reduciendo excedentes hídricos que elevan napas. Sistematización de lotes anegables como complemento.",i:"+8 pts"}],
+  coverCrop:[{t:"Ampliar cobertura invernal a 50%+ lotes",d:"Priorizar lotes expuestos a erosión eólica e hídrica.",i:"+12 pts"}],
+  drought:[{t:"Estudio de factibilidad de riego",d:"Pivot central o goteo en lotes con estrés hídrico recurrente.",i:"+7 pts"}],
+  flood:[{t:"Sistematización de lotes anegables",d:"Terrazas o canales de escurrimiento en zonas con recurrencia hídrica.",i:"+8 pts"}],
 };
 
 var NAMES = [
@@ -83,121 +76,47 @@ function semLabel(s) { return s==="green"?"CUMPLE":s==="orange"?"EN PROGRESO":"R
 /* ── Seeded random ── */
 function seededRand(seed) { var s=seed; return function(){s=(s*16807)%2147483647;return(s-1)/2147483646;}; }
 
-/* ══════════════════════════════════════════
-   GENERACIÓN CON PERFILES DE MANEJO
-   ══════════════════════════════════════════ */
-
+/* ── Data generation ── */
 function generateClients() {
   var rng = seededRand(42);
   var r01 = function(){ return rng(); };
   var rInt = function(mn,mx){ return Math.floor(r01()*(mx-mn+1))+mn; };
   var rFloat = function(mn,mx,dec){ dec=dec||1; return parseFloat((r01()*(mx-mn)+mn).toFixed(dec)); };
-  var clamp = function(v,mn,mx){ return Math.max(mn, Math.min(mx, v)); };
-  var noise = function(base, spread) { return base + (r01()-0.5) * spread; };
-
-  function regionFlags(loc) {
-    var l = loc.toLowerCase();
-    var isFrontier = l.indexOf("chaco")>=0 || l.indexOf("reconquista")>=0 || l.indexOf("concordia")>=0 || l.indexOf("viedma")>=0;
-    var isFloodProne = l.indexOf("buenos aires")>=0 || l.indexOf("entre ríos")>=0 || l.indexOf("santa fe")>=0;
-    var isDroughtProne = l.indexOf("la pampa")>=0 || l.indexOf("río negro")>=0 || l.indexOf("chaco")>=0 ||
-                         l.indexOf("trenque")>=0 || l.indexOf("general villegas")>=0 || l.indexOf("pehuajó")>=0 || l.indexOf("lincoln")>=0;
-    var isCoreZone = l.indexOf("córdoba")>=0 || l.indexOf("marcos juárez")>=0 || l.indexOf("bell ville")>=0 ||
-                     l.indexOf("pergamino")>=0 || l.indexOf("rosario")>=0 || l.indexOf("venado tuerto")>=0;
-    return { frontier:isFrontier, floodProne:isFloodProne, droughtProne:isDroughtProne, coreZone:isCoreZone };
-  }
-
   var clients = [];
   var aid = 1;
 
   for (var i = 0; i < 50; i++) {
-    var loc = LOCS[i];
-    var reg = regionFlags(loc);
-
-    var mq = r01();
-    if (reg.coreZone) mq = clamp(mq + 0.15, 0, 1);
-    if (reg.frontier) mq = clamp(mq - 0.2, 0, 1);
-
+    var numA = rInt(1, 5);
     var ha = rInt(600, 8000);
     var lots = Math.max(3, Math.round(ha / rInt(200, 500)));
     var cuitPre = r01() > 0.5 ? "30" : "20";
     var cuitMid = String(rInt(10000000, 99999999));
     var cuitEnd = String(rInt(0, 9));
-    var numA = rInt(1, 5);
-
-    /* Rotación: driver principal */
-    var baseRot;
-    if (mq >= 0.75) baseRot = rInt(3, 5);
-    else if (mq >= 0.45) baseRot = rInt(2, 3);
-    else baseRot = rInt(0, 1);
-
-    /* CC correlaciona con rotación */
-    var baseCc;
-    if (baseRot >= 4) baseCc = rInt(50, 90);
-    else if (baseRot >= 2) baseCc = rInt(15, 50);
-    else baseCc = rInt(0, 15);
-
-    /* Carbono = f(rotación, CC) */
-    var rotFactor = baseRot / 5;
-    var ccFactor = baseCc / 100;
-    var baseCar = parseFloat((0.3 + rotFactor * 2.5 + ccFactor * 1.5 + noise(0, 0.3)).toFixed(1));
-    baseCar = clamp(baseCar, 0.3, 4.5);
-
-    /* Sequía = f(CC, región) */
-    var baseDr = Math.round(ccFactor * 50 + rotFactor * 20 + noise(10, 15));
-    if (reg.droughtProne) baseDr = Math.round(baseDr * 0.65);
-    baseDr = clamp(baseDr, 5, 95);
-
-    /* Inundación = f(gramíneas en rotación, CC, región) */
-    var baseFl = Math.round(rotFactor * 45 + ccFactor * 30 + noise(10, 15));
-    if (reg.floodProne) baseFl = Math.round(baseFl * 0.7);
-    baseFl = clamp(baseFl, 10, 95);
-
-    /* Deforestación = f(región) */
-    var defor = reg.frontier ? rInt(82, 98) : 100;
-
     var assessments = [];
+    var baseRot = rInt(0, 2), baseCar = rFloat(0.3, 1.5), baseDr = rInt(5, 25), baseCc = rInt(2, 15), baseFl = rInt(15, 50);
+    var defor = r01() > 0.08 ? 100 : rInt(85, 99);
     var startDate = new Date(2023, rInt(0, 11), rInt(1, 28));
 
     for (var j = 0; j < numA; j++) {
       var dt = new Date(startDate);
       dt.setMonth(dt.getMonth() + j * rInt(4, 8));
-
-      var rot, cc, car, dr, fl;
-      if (j === 0) {
-        rot = baseRot; cc = baseCc; car = baseCar; dr = baseDr; fl = baseFl;
-      } else {
-        var rotImproved = r01() > 0.6;
-        rot = rotImproved ? clamp(assessments[j-1].kpis.rotation + 1, 0, 5) : assessments[j-1].kpis.rotation;
-
-        var ccDelta = rotImproved ? rInt(8, 20) : rInt(-3, 12);
-        cc = clamp(assessments[j-1].kpis.coverCrop + ccDelta, 0, 100);
-
-        var newRotF = rot / 5;
-        var newCcF = cc / 100;
-        car = parseFloat((0.3 + newRotF * 2.5 + newCcF * 1.5 + noise(0, 0.3)).toFixed(1));
-        car = clamp(car, 0.3, 4.5);
-
-        dr = clamp(Math.round(assessments[j-1].kpis.drought + newCcF * 10 + noise(0, 8)), 5, 100);
-        fl = clamp(Math.round(assessments[j-1].kpis.flood + newRotF * 8 + noise(0, 8)), 10, 100);
-      }
-
-      if (j > 0 && reg.frontier) {
-        defor = clamp(defor + rInt(0, 2), defor, 100);
-      }
-
+      var rot = Math.min(5, baseRot + (j > 0 ? rInt(0, 1) : 0));
+      var car = Math.min(4.5, parseFloat((baseCar + j * rFloat(0.3, 0.7)).toFixed(1)));
+      var dr = Math.min(100, baseDr + j * rInt(5, 15));
+      var cc = Math.min(100, baseCc + j * rInt(4, 14));
+      var fl = Math.min(100, baseFl + j * rInt(3, 12));
       var nR = (rot/5)*100, nC = (car/4.5)*100;
       var score = Math.round(nR*0.2 + defor*0.2 + nC*0.15 + dr*0.15 + cc*0.15 + fl*0.15);
       var aPhase = score>=85?5:score>=70?4:score>=50?3:score>=30?2:1;
-
       assessments.push({
         id:"a"+(aid++), date:dt.toISOString().split("T")[0], score:score, phase:aPhase,
-        kpis:{rotation:rot, deforestation:defor, carbon:car, drought:dr, coverCrop:cc, flood:fl}
+        kpis:{rotation:rot,deforestation:defor,carbon:car,drought:dr,coverCrop:cc,flood:fl}
       });
+      baseRot=rot; baseCar=car; baseDr=dr; baseCc=cc; baseFl=fl;
     }
-
     var lastPhase = assessments[assessments.length-1].phase;
     clients.push({
-      id:"c"+(i+1), name:NAMES[i], cuit:cuitPre+"-"+cuitMid+"-"+cuitEnd, loc:loc,
+      id:"c"+(i+1), name:NAMES[i], cuit:cuitPre+"-"+cuitMid+"-"+cuitEnd, loc:LOCS[i],
       ha:ha, lots:lots, eha:Math.round(ha*rFloat(0.75,0.92)), phase:lastPhase, assessments:assessments
     });
   }
@@ -207,7 +126,7 @@ function generateClients() {
 /* ── Persistence ── */
 function loadClients() {
   try {
-    var raw = localStorage.getItem("snap-v6");
+    var raw = localStorage.getItem("snap-v5");
     if (raw) return JSON.parse(raw);
   } catch(e) {}
   var c = generateClients();
@@ -215,5 +134,5 @@ function loadClients() {
   return c;
 }
 function saveClients(clients) {
-  try { localStorage.setItem("snap-v6", JSON.stringify(clients)); } catch(e) {}
+  try { localStorage.setItem("snap-v5", JSON.stringify(clients)); } catch(e) {}
 }

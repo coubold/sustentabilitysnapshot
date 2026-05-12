@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════
-   AgroSnapshot Sustentabilidad
+   AgroSnapshot Sostenibilidad
    app.js — State, Routing & Events
    ═══════════════════════════════════════ */
 
@@ -123,13 +123,13 @@ function runProcessing(container, steps, onDone) {
       pctEl.textContent = pct + "%";
       var step = document.createElement("div");
       step.className = "api-step";
-      step.innerHTML = '<div class="api-dot" style="background:#004481"></div><div class="api-text" style="color:#004481;font-weight:600">'+steps[i]+'</div>';
+      step.innerHTML = '<div class="api-dot" style="background:#06ffe1"></div><div class="api-text" style="color:#06ffe1;font-weight:600">'+steps[i]+'</div>';
       // Mark previous as done
       var prev = logEl.querySelectorAll(".api-step");
       if (prev.length > 0) {
         var last = prev[prev.length-1];
         last.querySelector(".api-dot").style.background = "#16A34A";
-        last.querySelector(".api-text").style.color = "#6B7280";
+        last.querySelector(".api-text").style.color = "#8a96a8";
         last.querySelector(".api-text").style.fontWeight = "400";
       }
       logEl.appendChild(step);
@@ -161,10 +161,10 @@ function showNewModal() {
 
   function renderStep() {
     var html = '<div class="modal-head"><div>' +
-      '<div class="modal-title">Nueva Evaluación de Sustentabilidad</div>' +
+      '<div class="modal-title">Nueva Evaluación de Sostenibilidad</div>' +
       '<div class="modal-subtitle">'+(step===1?"Datos del establecimiento":step===2?"Carga de polígonos":step===3?"Procesando con BoldOS":"Evaluación completa")+'</div>' +
       '</div><div class="modal-steps">';
-    for (var s=1;s<=4;s++) html += '<div class="modal-step" style="width:'+(s===step?'24':'8')+'px;background:'+(s<=step?'#004481':'#E5E7EB')+'"></div>';
+    for (var s=1;s<=4;s++) html += '<div class="modal-step" style="width:'+(s===step?'24':'8')+'px;background:'+(s<=step?'#06ffe1':'#E5E7EB')+'"></div>';
     html += '</div></div><div class="modal-body">';
 
     if (step === 1) {
@@ -185,7 +185,7 @@ function showNewModal() {
           '<div><span class="upload-ext">.KMZ</span><span class="upload-ext">.KML</span><span class="upload-ext">.GeoJSON</span><span class="upload-ext">.SHP</span></div>';
       } else {
         html += '<div style="display:flex;align-items:center;gap:12px;justify-content:center">' +
-          '<div style="width:40px;height:40px;border-radius:10px;background:#004481;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff">📍</div>' +
+          '<div style="width:40px;height:40px;border-radius:10px;background:#06ffe1;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff">📍</div>' +
           '<div style="text-align:left"><div style="font-size:13px;font-weight:700;color:#1F2937">'+fileName+'</div>' +
           '<div style="font-size:11px;color:#16A34A;font-weight:600">✓ Archivo listo</div></div></div>';
       }
@@ -227,8 +227,8 @@ function showNewModal() {
     var fileInput = document.getElementById("file-input");
     if (zone) {
       zone.onclick = function(){ if(fileInput) fileInput.click(); };
-      zone.ondragover = function(e){e.preventDefault();zone.style.borderColor="#004481";};
-      zone.ondragleave = function(){zone.style.borderColor=fileName?"#004481":"#D1D5DB";};
+      zone.ondragover = function(e){e.preventDefault();zone.style.borderColor="#06ffe1";};
+      zone.ondragleave = function(){zone.style.borderColor=fileName?"#06ffe1":"#2a3548";};
       zone.ondrop = function(e){e.preventDefault();var f=e.dataTransfer.files[0];if(f){fileName=f.name;renderStep();}};
     }
     if (fileInput) fileInput.onchange = function(){var f=this.files[0];if(f){fileName=f.name;renderStep();}};
@@ -240,7 +240,7 @@ function showNewModal() {
     if (next2 && fileName) next2.onclick = function() {
       step = 3; renderStep();
       var steps = [
-        "Validando CUIT contra base BBVA...",
+        "Validando CUIT contra base de productores...",
         "Parseando geometrías del KMZ...",
         "Identificando lotes y límites parcelarios...",
         "Consultando BoldOS Daredevil — señales multitemporales...",
@@ -250,17 +250,14 @@ function showNewModal() {
         "Estimando captura de carbono por biomasa...",
         "Evaluando estrés hídrico y cobertura invernal...",
         "Procesando riesgo de inundación...",
-        "BoldOS Thot — generando score de sustentabilidad...",
+        "BoldOS Thot — generando score de sostenibilidad...",
         "Compilando informe y recomendaciones...",
       ];
       runProcessing(modal, steps, function() {
         // Generate result
         var rot=Math.floor(Math.random()*4)+1, def=Math.random()>0.1?100:Math.floor(Math.random()*10)+90;
-        var ccBase = rot>=4?Math.floor(Math.random()*40)+50 : rot>=2?Math.floor(Math.random()*35)+15 : Math.floor(Math.random()*15);
-        var cc=ccBase, rotF=rot/5, ccF=cc/100;
-        var car=parseFloat(Math.min(4.5, Math.max(0.3, 0.3+rotF*2.5+ccF*1.5+(Math.random()-0.5)*0.3)).toFixed(1));
-        var dr=Math.min(95, Math.max(5, Math.round(ccF*50+rotF*20+10+(Math.random()-0.5)*15)));
-        var fl=Math.min(95, Math.max(10, Math.round(rotF*45+ccF*30+10+(Math.random()-0.5)*15)));
+        var car=parseFloat((Math.random()*3+0.5).toFixed(1)), dr=Math.floor(Math.random()*60)+20;
+        var cc=Math.floor(Math.random()*50)+10, fl=Math.floor(Math.random()*50)+20;
         var nR=(rot/5)*100, nC=(car/4.5)*100;
         var score=Math.round(nR*0.2+def*0.2+nC*0.15+dr*0.15+cc*0.15+fl*0.15);
         var phase=score>=85?5:score>=70?4:score>=50?3:score>=30?2:1;
@@ -280,7 +277,7 @@ function showNewModal() {
           '<div style="font-size:12px;color:#6B7280">'+form.name+' · CUIT '+form.cuit+'</div></div>' +
           '<div style="background:#F9FAFB;border-radius:12px;padding:20px;border:1px solid #E5E7EB;margin-bottom:20px;text-align:center">' +
           renderRing(score, 80) +
-          '<div style="font-size:13px;font-weight:700;color:#004481;margin-top:8px">Score de Sustentabilidad</div>' +
+          '<div style="font-size:13px;font-weight:700;color:#06ffe1;margin-top:8px">Score de Sostenibilidad</div>' +
           '<div style="font-size:12px;color:#6B7280">Estadio: <span style="font-weight:700;color:'+scoreColor(score)+'">'+statusLabel(score)+'</span> · Fase '+phase+'</div></div>' +
           '<button class="btn btn-primary btn-full" id="m-save-new">Ver Informe Completo →</button>';
 
@@ -315,7 +312,7 @@ function showReevalModal() {
   document.body.appendChild(overlay);
 
   modal.innerHTML = '<div class="modal-head"><div>' +
-    '<div class="modal-title">Reevaluación de Sustentabilidad</div>' +
+    '<div class="modal-title">Reevaluación de Sostenibilidad</div>' +
     '<div class="modal-subtitle">'+cl.name+' · '+cl.cuit+'</div></div></div>' +
     '<div class="modal-body">' +
     '<div style="background:#F9FAFB;border-radius:10px;padding:12px 16px;border:1px solid #E5E7EB;margin-bottom:20px;display:flex;align-items:center;gap:12px">' +
@@ -338,22 +335,20 @@ function showReevalModal() {
     "Detectando cultivo de cobertura invernal...",
     "Evaluando estrés hídrico y reserva de agua en suelo...",
     "Analizando riesgo de inundación — recurrencia histórica...",
-    "BoldOS Thot — recalculando score de sustentabilidad...",
+    "BoldOS Thot — recalculando score de sostenibilidad...",
     "Comparando con evaluación anterior...",
     "Generando informe actualizado y recomendaciones...",
   ];
 
   runProcessing(modal, steps, function() {
-    // Evolve KPIs — correlated improvements
-    var rotImproved = Math.random() > 0.5;
-    var rot = rotImproved ? Math.min(5, prev.kpis.rotation + 1) : prev.kpis.rotation;
+    // Evolve KPIs
+    var rot = Math.min(5, prev.kpis.rotation + (Math.random()>0.5?1:0));
     var def = prev.kpis.deforestation >= 100 ? 100 : Math.min(100, prev.kpis.deforestation + Math.floor(Math.random()*3));
-    var ccDelta = rotImproved ? Math.floor(Math.random()*12)+8 : Math.floor(Math.random()*15)-3;
-    var cc = Math.max(0, Math.min(100, prev.kpis.coverCrop + ccDelta));
-    var newRotF = rot/5, newCcF = cc/100;
-    var car = parseFloat(Math.min(4.5, Math.max(0.3, 0.3+newRotF*2.5+newCcF*1.5+(Math.random()-0.5)*0.3)).toFixed(1));
-    var dr = Math.max(5, Math.min(100, Math.round(prev.kpis.drought + newCcF*10 + (Math.random()-0.5)*8)));
-    var fl = Math.max(10, Math.min(100, Math.round(prev.kpis.flood + newRotF*8 + (Math.random()-0.5)*8)));
+    var car = Math.min(4.5, parseFloat((prev.kpis.carbon + (Math.random()-0.25)*0.8).toFixed(1)));
+    var dr = Math.min(100, Math.round(prev.kpis.drought + (Math.random()-0.25)*15));
+    var cc = Math.min(100, Math.round(prev.kpis.coverCrop + (Math.random()-0.25)*18));
+    var fl = Math.min(100, Math.round(prev.kpis.flood + (Math.random()-0.25)*12));
+    car = Math.max(0.3, car); dr = Math.max(5, dr); cc = Math.max(2, cc); fl = Math.max(10, fl);
     var nR=(rot/5)*100, nC=(car/4.5)*100;
     var score = Math.round(nR*0.2+def*0.2+nC*0.15+dr*0.15+cc*0.15+fl*0.15);
     var phase = score>=85?5:score>=70?4:score>=50?3:score>=30?2:1;
@@ -361,9 +356,9 @@ function showReevalModal() {
     var result = {id:"a"+Date.now(),date:now,score:score,phase:phase,kpis:{rotation:rot,deforestation:def,carbon:car,drought:dr,coverCrop:cc,flood:fl}};
 
     var d = result.score - prev.score;
-    var dColor = d>0?"#16A34A":d<0?"#DC2626":"#6B7280";
+    var dColor = d>0?"#16A34A":d<0?"#DC2626":"#8a96a8";
     var dBg = d>0?"#F0FDF4":d<0?"#FEF2F2":"#F9FAFB";
-    var dBd = d>0?"#BBF7D0":d<0?"#FECACA":"#E5E7EB";
+    var dBd = d>0?"#BBF7D0":d<0?"#FECACA":"#1f2937";
 
     var body = modal.querySelector(".modal-body");
     var html = '<div style="text-align:center;margin-bottom:20px">' +
@@ -375,7 +370,7 @@ function showReevalModal() {
     html += '<div class="compare-row">' +
       '<div style="text-align:center;opacity:0.5">' + renderRing(prev.score, 70) + '<div class="compare-label" style="color:#9CA3AF">Anterior</div></div>' +
       '<div class="compare-arrow" style="color:'+dColor+'">→</div>' +
-      '<div style="text-align:center">' + renderRing(result.score, 70) + '<div class="compare-label" style="color:#004481;font-weight:600">Nueva</div></div>' +
+      '<div style="text-align:center">' + renderRing(result.score, 70) + '<div class="compare-label" style="color:#06ffe1;font-weight:600">Nueva</div></div>' +
       '<div class="compare-delta" style="background:'+dBg+';border:1px solid '+dBd+'"><div class="compare-delta-val" style="color:'+dColor+'">'+(d>0?"+":"")+d+'</div><div style="font-size:10px;color:#6B7280">puntos</div></div>' +
       '</div>';
 
@@ -387,7 +382,7 @@ function showReevalModal() {
       var delta = k==="carbon"?parseFloat((vNew-vOld).toFixed(1)):vNew-vOld;
       var bgC = s==="green"?"#F0FDF4":s==="orange"?"#FFFBEB":"#FEF2F2";
       var bdC = s==="green"?"#BBF7D0":s==="orange"?"#FDE68A":"#FECACA";
-      var txC = s==="green"?"#16A34A":s==="orange"?"#D97706":"#DC2626";
+      var txC = s==="green"?"#16A34A":s==="orange"?"#ffb547":"#DC2626";
       html += '<div class="kpi-mini" style="background:'+bgC+';border:1px solid '+bdC+'">' +
         '<div class="kpi-mini-header"><span class="kpi-mini-label">'+cfg.icon+' '+cfg.label.split(" ")[0]+'</span><div class="kpi-mini-dot" style="background:'+txC+'"></div></div>' +
         '<div class="kpi-mini-value" style="color:'+txC+'">'+disp+'</div>';
